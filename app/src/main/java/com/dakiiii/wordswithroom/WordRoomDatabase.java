@@ -13,7 +13,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 @Database(entities = {Word.class}, exportSchema = false, version = 1)
 public abstract class WordRoomDatabase extends RoomDatabase {
     public static final String TAG_ROOM_DB = "Room DB: ";
+
     public abstract WordDao eWordDao();
+
     private static WordRoomDatabase sWordRoomDatabase;
 
     public static WordRoomDatabase getInstance(final Context context) {
@@ -44,17 +46,20 @@ public abstract class WordRoomDatabase extends RoomDatabase {
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
         private final WordDao eWordDao;
         String[] words = {"Lemon haze", "Gorilla glue", "Logs"};
+
         PopulateDbAsync(WordRoomDatabase database) {
             eWordDao = database.eWordDao();
         }
+
         @Override
         protected Void doInBackground(Void... voids) {
-            eWordDao.deleteAll();
-
-            for (int a = 1; a <= words.length -1; a++){
-                Word word = new Word(words[a]);
-                eWordDao.insert(word);
+            if (eWordDao.getAnyWord().length < 1) {
+                for (int a = 1; a <= words.length - 1; a++) {
+                    Word word = new Word(words[a]);
+                    eWordDao.insert(word);
+                }
             }
+
             return null;
         }
     }
